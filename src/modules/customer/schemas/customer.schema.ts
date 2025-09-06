@@ -29,6 +29,10 @@ export class Customer {
   @Prop({ required: true })
   passwordHash: string;
 
+  @ApiProperty({ description: 'Is guest customer' })
+  @Prop({ default: false })
+  isGuest: boolean;
+
   @ApiProperty({ description: 'Billing address' })
   @Prop({
     type: {

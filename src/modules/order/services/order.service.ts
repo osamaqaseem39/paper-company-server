@@ -5,10 +5,14 @@ import { OrderDocument, OrderStatus, PaymentStatus } from '../schemas/order.sche
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
 import { PaginationOptions, PaginatedResult } from '@/common/interfaces/base.interface';
+import { CustomerService } from '../../customer/services/customer.service';
 
 @Injectable()
 export class OrderService extends BaseService<OrderDocument> {
-  constructor(private readonly orderRepository: OrderRepository) {
+  constructor(
+    private readonly orderRepository: OrderRepository,
+    private readonly customerService: CustomerService,
+  ) {
     super(orderRepository);
   }
 
@@ -35,7 +39,25 @@ export class OrderService extends BaseService<OrderDocument> {
       throw new BadRequestException('Total does not match subtotal + shipping + tax - discount');
     }
 
-    return await this.orderRepository.create(createOrderDto);
+    // Handle guest customer creation
+    let customerId = createOrderDto.customerId;
+    if (customerId === 'guest' && createOrderDto.billingAddress) {
+      const guestCustomer = await this.customerService.createGuestCustomer({
+        firstName: createOrderDto.billingAddress.firstName,
+        lastName: createOrderDto.billingAddress.lastName,
+        email: createOrderDto.billingAddress.email,
+        phone: createOrderDto.billingAddress.phone,
+      });
+      customerId = guestCustomer._id.toString();
+    }
+
+    // Create order with proper customer ID
+    const orderData = {
+      ...createOrderDto,
+      customerId,
+    };
+
+    return await this.orderRepository.create(orderData);
   }
 
   async updateOrder(id: string, updateOrderDto: UpdateOrderDto): Promise<OrderDocument> {

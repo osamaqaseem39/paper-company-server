@@ -159,4 +159,32 @@ export class ProductRepository extends BaseRepository<ProductDocument> {
       totalPages: Math.ceil(total / limit),
     };
   }
+
+  async findWithPagination(filter: any, options?: PaginationOptions): Promise<PaginatedResult<ProductDocument>> {
+    const { page = 1, limit = 10, sort, order = 'desc' } = options || {};
+    
+    const skip = (page - 1) * limit;
+    const sortOption = sort ? { [sort]: order === 'desc' ? -1 : 1 } : { createdAt: -1 } as any;
+    
+    const [data, total] = await Promise.all([
+      this.productModel
+        .find(filter)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(limit)
+        .populate('categories', 'name slug')
+        .populate('tags', 'name slug')
+        .populate('images', 'url altText position')
+        .exec(),
+      this.productModel.countDocuments(filter).exec(),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
 } 

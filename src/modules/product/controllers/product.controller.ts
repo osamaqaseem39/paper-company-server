@@ -91,6 +91,46 @@ export class ProductController {
     return await this.productService.searchProducts(query, paginationDto);
   }
 
+  @Get('featured')
+  @ApiOperation({ summary: 'Get featured/best seller products' })
+  @ApiResponse({
+    status: 200,
+    description: 'Featured products retrieved successfully',
+    type: [Product],
+  })
+  @ApiQuery({ type: PaginationDto })
+  async getFeatured(@Query() paginationDto: PaginationDto): Promise<PaginatedResult<Product>> {
+    return await this.productService.getFeaturedProducts(paginationDto);
+  }
+
+  @Get('in-stock')
+  @ApiOperation({ summary: 'Get only in-stock products' })
+  @ApiResponse({
+    status: 200,
+    description: 'In-stock products retrieved successfully',
+    type: [Product],
+  })
+  @ApiQuery({ type: PaginationDto })
+  async getInStock(@Query() paginationDto: PaginationDto): Promise<PaginatedResult<Product>> {
+    return await this.productService.getInStockProducts(paginationDto);
+  }
+
+  @Get('by-rating')
+  @ApiOperation({ summary: 'Get products filtered by minimum rating' })
+  @ApiResponse({
+    status: 200,
+    description: 'Products filtered by rating',
+    type: [Product],
+  })
+  @ApiQuery({ name: 'minRating', description: 'Minimum rating (0-5)', required: false })
+  @ApiQuery({ type: PaginationDto })
+  async getByRating(
+    @Query('minRating') minRating: number = 0,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<PaginatedResult<Product>> {
+    return await this.productService.getProductsByRating(minRating, paginationDto);
+  }
+
   @Get('category/:categoryId')
   @ApiOperation({ summary: 'Get products by category' })
   @ApiResponse({

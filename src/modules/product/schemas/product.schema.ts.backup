@@ -1,4 +1,4 @@
-﻿import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -59,10 +59,6 @@ export class Product {
   @Prop({ min: 0 })
   salePrice?: number;
 
-  @ApiProperty({ description: 'Original price before discount' })
-  @Prop({ min: 0 })
-  originalPrice?: number;
-
   @ApiProperty({ description: 'Currency code' })
   @Prop({ required: true, default: 'USD' })
   currency: string;
@@ -74,14 +70,6 @@ export class Product {
   @ApiProperty({ enum: StockStatus, description: 'Stock status' })
   @Prop({ required: true, enum: StockStatus, default: StockStatus.OUTOFSTOCK })
   stockStatus: StockStatus;
-
-  @ApiProperty({ description: 'Whether product is in stock (derived from stockStatus)' })
-  @Prop({ 
-    get: function() {
-      return this.stockStatus === StockStatus.INSTOCK && this.stockQuantity > 0;
-    }
-  })
-  inStock: boolean;
 
   @ApiProperty({ description: 'Product weight' })
   @Prop({ min: 0 })
@@ -100,66 +88,6 @@ export class Product {
     width: number;
     height: number;
   };
-
-  @ApiProperty({ description: 'Paper weight (GSM)' })
-  @Prop({ trim: true })
-  gsm?: string;
-
-  @ApiProperty({ description: 'Paper size (e.g., A4, A3)' })
-  @Prop({ trim: true })
-  size?: string;
-
-  @ApiProperty({ description: 'Number of sheets' })
-  @Prop({ trim: true })
-  sheets?: string;
-
-  @ApiProperty({ description: 'Product rating (0-5)' })
-  @Prop({ min: 0, max: 5, default: 0 })
-  rating: number;
-
-  @ApiProperty({ description: 'Number of reviews' })
-  @Prop({ min: 0, default: 0 })
-  reviews: number;
-
-  @ApiProperty({ description: 'Product features' })
-  @Prop({ type: [String], default: [] })
-  features: string[];
-
-  @ApiProperty({ description: 'Product applications' })
-  @Prop({ type: [String], default: [] })
-  applications: string[];
-
-  @ApiProperty({ description: 'SEO data' })
-  @Prop({
-    type: {
-      title: { type: String },
-      description: { type: String },
-      keywords: { type: [String], default: [] },
-      slug: { type: String },
-      canonicalUrl: { type: String },
-      ogImage: { type: String },
-      noIndex: { type: Boolean, default: false },
-      noFollow: { type: Boolean, default: false },
-    },
-  })
-  seo?: {
-    title?: string;
-    description?: string;
-    keywords?: string[];
-    slug?: string;
-    canonicalUrl?: string;
-    ogImage?: string;
-    noIndex?: boolean;
-    noFollow?: boolean;
-  };
-
-  @ApiProperty({ description: 'Whether product is active' })
-  @Prop({ default: true })
-  isActive: boolean;
-
-  @ApiProperty({ description: 'Whether product is a best seller' })
-  @Prop({ default: false })
-  bestSeller: boolean;
 
   @ApiProperty({ description: 'Whether to manage stock' })
   @Prop({ default: true })
@@ -186,7 +114,7 @@ export class Product {
   brand?: string;
 
   @ApiProperty({ description: 'Product attributes' })
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'Attribute' })
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'ProductAttribute' })
   attributes: string[];
 
   @ApiProperty({ description: 'Product variations' })
@@ -211,7 +139,4 @@ ProductSchema.index({ brand: 1 });
 ProductSchema.index({ categories: 1 });
 ProductSchema.index({ status: 1 });
 ProductSchema.index({ price: 1 });
-ProductSchema.index({ rating: -1 });
-ProductSchema.index({ bestSeller: 1 });
-ProductSchema.index({ inStock: 1 });
-ProductSchema.index({ createdAt: -1 });
+ProductSchema.index({ createdAt: -1 }); 

@@ -18,13 +18,25 @@ export class ProductVariation {
   @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'Product' })
   productId: string;
 
+  @ApiProperty({ description: 'Variation name' })
+  @Prop({ required: true, trim: true })
+  name: string;
+
   @ApiProperty({ description: 'Variation SKU' })
-  @Prop({ trim: true })
-  sku?: string;
+  @Prop({ required: true, unique: true, trim: true })
+  sku: string;
 
   @ApiProperty({ description: 'Variation price' })
   @Prop({ required: true, min: 0 })
   price: number;
+
+  @ApiProperty({ description: 'Compare price (original price)' })
+  @Prop({ min: 0 })
+  comparePrice?: number;
+
+  @ApiProperty({ description: 'Cost price' })
+  @Prop({ required: true, min: 0 })
+  costPrice: number;
 
   @ApiProperty({ description: 'Variation sale price' })
   @Prop({ min: 0 })
@@ -39,8 +51,30 @@ export class ProductVariation {
   stockStatus: VariationStockStatus;
 
   @ApiProperty({ description: 'Variation attributes' })
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'ProductAttribute' })
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'Attribute' })
   attributes: string[];
+
+  @ApiProperty({ description: 'Variation weight' })
+  @Prop({ min: 0 })
+  weight?: number;
+
+  @ApiProperty({ description: 'Variation dimensions' })
+  @Prop({
+    type: {
+      length: { type: Number, min: 0 },
+      width: { type: Number, min: 0 },
+      height: { type: Number, min: 0 },
+    },
+  })
+  dimensions?: {
+    length: number;
+    width: number;
+    height: number;
+  };
+
+  @ApiProperty({ description: 'Whether variation is active' })
+  @Prop({ default: true })
+  isActive: boolean;
 
   @ApiProperty({ description: 'Variation image' })
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ProductImage' })

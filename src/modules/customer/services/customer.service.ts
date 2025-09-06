@@ -87,4 +87,29 @@ export class CustomerService extends BaseService<CustomerDocument> {
   async findByName(firstName: string, lastName: string): Promise<CustomerDocument[]> {
     return await this.customerRepository.findByName(firstName, lastName);
   }
+
+  async createGuestCustomer(guestData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+  }): Promise<CustomerDocument> {
+    // Check if customer with same email already exists
+    const existingCustomer = await this.customerRepository.findByEmail(guestData.email);
+    if (existingCustomer) {
+      return existingCustomer;
+    }
+
+    // Create guest customer data
+    const customerData = {
+      firstName: guestData.firstName,
+      lastName: guestData.lastName,
+      email: guestData.email,
+      phone: guestData.phone,
+      isGuest: true,
+      passwordHash: '', // No password for guest customers
+    };
+
+    return await this.customerRepository.create(customerData);
+  }
 } 

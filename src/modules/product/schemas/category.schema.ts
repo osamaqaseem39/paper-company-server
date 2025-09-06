@@ -29,6 +29,10 @@ export class Category {
   @Prop()
   image?: string;
 
+  @ApiProperty({ description: 'Whether category is active' })
+  @Prop({ default: true })
+  isActive: boolean;
+
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;
 

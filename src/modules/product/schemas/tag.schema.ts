@@ -17,6 +17,10 @@ export class Tag {
   @Prop({ required: true, unique: true, trim: true })
   slug: string;
 
+  @ApiProperty({ description: 'Whether tag is active' })
+  @Prop({ default: true })
+  isActive: boolean;
+
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;
 

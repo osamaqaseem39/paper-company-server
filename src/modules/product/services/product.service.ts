@@ -178,4 +178,24 @@ export class ProductService extends BaseService<ProductDocument> {
       stockStatus,
     });
   }
+
+  async getFeaturedProducts(paginationOptions: PaginationOptions): Promise<PaginatedResult<ProductDocument>> {
+    const filter = { bestSeller: true };
+    return await this.productRepository.findWithPagination(filter, paginationOptions);
+  }
+
+  async getInStockProducts(paginationOptions: PaginationOptions): Promise<PaginatedResult<ProductDocument>> {
+    const filter = { 
+      stockStatus: StockStatus.INSTOCK,
+      stockQuantity: { $gt: 0 }
+    };
+    return await this.productRepository.findWithPagination(filter, paginationOptions);
+  }
+
+  async getProductsByRating(minRating: number, paginationOptions: PaginationOptions): Promise<PaginatedResult<ProductDocument>> {
+    const filter = { 
+      rating: { $gte: minRating }
+    };
+    return await this.productRepository.findWithPagination(filter, paginationOptions);
+  }
 } 

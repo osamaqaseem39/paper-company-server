@@ -96,7 +96,7 @@ class AddressDto {
 
 export class CreateOrderDto {
   @ApiProperty({ description: 'Customer ID' })
-  @IsMongoId()
+  @IsString()
   customerId: string;
 
   @ApiPropertyOptional({ enum: OrderStatus, description: 'Order status' })
