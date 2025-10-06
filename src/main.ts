@@ -17,8 +17,21 @@ async function bootstrap() {
     transform: true,
   }));
 
+  // Global API prefix to match frontend base URL expectations
+  app.setGlobalPrefix('api');
+
   // CORS
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'https://paper-company-backend.vercel.app', // Dashboard (admin)
+      'https://paper-company.vercel.app', // Public website (if applicable)
+      'http://localhost:3000',
+      'http://localhost:5173',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
 
   // Swagger documentation
   const swaggerConfig = configService.get('swagger');
